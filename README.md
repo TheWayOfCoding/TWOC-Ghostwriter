@@ -1,4 +1,6 @@
-# <img src="./resources/icons/sc-apps-ghostwriter.svg" align="left" width="32" style="padding-right:5px"> ghostwriter
+# TWOC KDE Ghostwriter fork
+
+A fork of KDE Ghostwriter modified to work as I want for viewing .md markup files. Panels can be in any position and the file tab is removed. I also increased the size of the scroll bars so they are easiler to use. 
 
 *ghostwriter* is a Windows and Linux text editor for Markdown, which is a plain text markup format created by John Gruber. For more information about Markdown, please visit John Gruber’s website at <http://www.daringfireball.net>.  *ghostwriter* provides a relaxing, distraction-free writing environment, whether your masterpiece be that next blog post, your school paper, or your NaNoWriMo novel.  For a tour of its features, please visit the [*ghostwriter* project site](https://ghostwriter.kde.org).
 
@@ -135,3 +137,103 @@ Please read the [contributing guide](https://ghostwriter.kde.org/contribute/) on
 ## Licensing
 
 The source code for *ghostwriter* is licensed under the [GNU General Public License Version 3](http://www.gnu.org/licenses/gpl.html).  However, various icons and third-party FOSS code (i.e., cmark-gfm, MathJax, etc.) have different licenses compatible with GPLv3.  Please read the COPYING or LICENSE files in the respective folders for the different licenses.
+
+
+---
+
+# 📺 TWOC Stream Edition Customizations
+
+This section documents the specific custom modifications, environment dependencies, and compiler setup guides applied to this stream-safe fork.
+
+## 📺 Stream-Safe Enhancements
+* **Enhanced Privacy:** The Folder View/File System side-panel tab is completely removed from the UI tree so your private system directories are never exposed on stream.
+* **Secure Startup Directory:** When opened fresh with an untitled document, the background file browser automatically routes safely to an empty, anonymous folder (`Desktop`) instead of the user profile root.
+* **Always Starts on Outline:** Bypasses Windows registry window history caching so the sidebar permanently defaults locked onto the clean **Outline** layout panel on launch.
+* **Expanded Dynamic Preview Width:** Lifted the restrictive 50% split-pane bottleneck, allowing the markdown container viewport to scale completely fluidly to any dragged size.
+* **Symmetrical Scrollbars:** Synchronized custom **11px** dark-mode aligned scrollbars running smoothly across both native C++ layout widgets and the React viewport panels.
+
+---
+
+## 🛠️ Complete Environment & Tool Setup
+
+Because Ghostwriter is a KDE application, compiling it on Windows requires setting up a C++ toolchain managed by the **KDE Craft** development framework.
+
+### 1. Install System Prerequisites
+Before cloning or building, ensure the following core tools are installed on your Windows machine:
+* **Python 3.10+**: Download from the official portal. Ensure you check the box for **"Add Python to PATH"** and select **"Disable path length limit"** at the end of the installation.
+* **Visual Studio Community (2022)**: Download the installer and select the **"Desktop development with C++"** workload group. 
+* **Windows Developer Mode:** Open Windows Settings -> Privacy & Security -> For developers, and toggle **Developer Mode** to **ON**.
+
+### 2. Initialize KDE Craft
+Open a standard Windows **PowerShell** window as **Administrator** and run the following configuration scripts to install the framework:
+```powershell
+# Allow execution of network setup scripts
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+
+# Update security certificates for Python
+python.exe -m pip install --upgrade certifi
+
+# Install the KDE Craft bootstrapper framework (Accept all default paths by pressing Enter)
+iex ((new-object net.webclient).DownloadString('https://githubusercontent.com'))
+```
+*This script sets up your core compiler dependencies inside `C:\CraftRoot\` and creates a specialized link in your Start Menu named **"Craft Command Prompt"**.*
+
+### 3. Install Target Module Dependencies
+Launch your newly created **Craft Command Prompt** from the Start Menu and run these instructions to pull down the pre-compiled library binaries:
+```powershell
+craft libs/qt6/qtwebchannel
+craft libs/qt6/qtwebengine
+```
+
+---
+
+## 💻 Compilation & Deployment Instructions
+
+Navigate to your workspace directory inside your active **Craft Command Prompt** and run the following building pipelines:
+
+### Clean Production Rebuild
+```powershell
+# 1. Move into your workspace repository
+cd C:\path\to\your\workspace\TWOC-Ghostwriter
+
+# 2. Wipe stale configuration path logs
+Remove-Item -Recurse -Force .\build
+
+# 3. Generate fresh makefiles locking into the Release build pipeline
+cmake --preset dev -DCMAKE_BUILD_TYPE=Release
+
+# 4. Compile the C++ binary targets and bake the React assets into memory
+cmake --build --preset dev --config Release
+```
+
+### Deploying for Production/Streaming Use
+Once compiled, you can extract the lightweight application files out of the bulky 3GB build suite to place them in a dedicated folder (e.g., `C:\Users\<YourUsername>\Applications\TWOC-Ghostwriter`):
+
+1. Create a clean destination folder named `Applications\TWOC-Ghostwriter` in your user directory.
+2. Copy over only these **three specific items** from `.\build\bin\`:
+   * **`ghostwriter.exe`** (The main program binary)
+   * **`resources.qrc`** (Compiled asset maps)
+   * **`platforms\`** (The directory folder holding sub-display components like `qwindows.dll`)
+
+---
+
+## 🚀 Execution Caveat & Shortcut Setup
+
+### ⚠️ Critical Runtime Caveat
+Because this application links dynamically to the shared library packages managed inside your Craft tree, **you cannot simply double-click the `ghostwriter.exe` file inside File Explorer**. Launching it outside the runtime layer will cause Windows to crash with a missing DLL alert (e.g., `KF6SonnetUi.dll missing`). 
+
+To run the application, it must inherit the environment mapping keys via the terminal wrapper.
+
+### Create a Invisible Desktop Shortcut (Recommended)
+To launch your customized application smoothly from your desktop or a streaming macro pad without keeping an open terminal prompt visible on screen:
+
+1. Right-click your desktop, select **New -> Shortcut**.
+2. Paste this exact instruction into the **Location** target box (this syntax avoids nested quote conflicts completely):
+   ```text
+   C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -Command "& 'C:\CraftRoot\craft\craftenv.ps1'; Set-Location $env:USERPROFILE\Applications\TWOC-Ghostwriter; .\ghostwriter.exe"
+   ```
+3. Click Next, name the shortcut **TWOC-Ghostwriter**, and click Finish.
+4. Right-click your new shortcut, choose **Properties**, and update the **Start in:** directory string to:
+   ```text
+   %USERPROFILE%\Applications\TWOC-Ghostwriter
+   ```
