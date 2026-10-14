@@ -138,7 +138,6 @@ Please read the [contributing guide](https://ghostwriter.kde.org/contribute/) on
 
 The source code for *ghostwriter* is licensed under the [GNU General Public License Version 3](http://www.gnu.org/licenses/gpl.html).  However, various icons and third-party FOSS code (i.e., cmark-gfm, MathJax, etc.) have different licenses compatible with GPLv3.  Please read the COPYING or LICENSE files in the respective folders for the different licenses.
 
-
 ---
 
 # 📺 TWOC Stream Edition Customizations
@@ -147,10 +146,11 @@ This section documents the specific custom modifications, environment dependenci
 
 ## 📺 Stream-Safe Enhancements
 * **Enhanced Privacy:** The Folder View/File System side-panel tab is completely removed from the UI tree so your private system directories are never exposed on stream.
-* **Secure Startup Directory:** When opened fresh with an untitled document, the background file browser automatically routes safely to an empty, anonymous folder (`Desktop`) instead of the user profile root.
+* **Secure Startup Directory:** When opened fresh with an untitled document, the background file browser automatically routes safely to an empty, anonymous folder on Windows (`Desktop`) instead of the user profile root.
 * **Always Starts on Outline:** Bypasses Windows registry window history caching so the sidebar permanently defaults locked onto the clean **Outline** layout panel on launch.
 * **Expanded Dynamic Preview Width:** Lifted the restrictive 50% split-pane bottleneck, allowing the markdown container viewport to scale completely fluidly to any dragged size.
 * **Symmetrical Scrollbars:** Synchronized custom **11px** dark-mode aligned scrollbars running smoothly across both native C++ layout widgets and the React viewport panels.
+* **Corrected internal code block horizontal Scrollbars** Code changes fixed the HTML preview's rendering of code blocks so now they have scrollbars so you can actually read the entire thing in the preview window. 
 
 ---
 
@@ -161,8 +161,13 @@ Because Ghostwriter is a KDE application, compiling it on Windows requires setti
 ### 1. Install System Prerequisites
 Before cloning or building, ensure the following core tools are installed on your Windows machine:
 * **Python 3.10+**: Download from the official portal. Ensure you check the box for **"Add Python to PATH"** and select **"Disable path length limit"** at the end of the installation.
-* **Visual Studio Community (2022)**: Download the installer and select the **"Desktop development with C++"** workload group. 
-* **Windows Developer Mode:** Open Windows Settings -> Privacy & Security -> For developers, and toggle **Developer Mode** to **ON**.
+* **Visual Studio Community (2022)**: Download the installer... Microsoft is effectively paywalling this old version of Visual Studio Community Edition. at least for now this command to install works:
+```powershell
+winget install Microsoft.VisualStudio.2022.BuildTools --override "--passive --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+```
+*
+*  If necessary, when installing select the **"Desktop development with C++"** workload group. in addition to to sub-packages: C++ ATL for latest v143 build tools (x86 & x64), Windows 11 SDK (or Windows 10 SDK), and the CMake tools for Windows
+* **Windows Developer Mode:** Open Windows Settings -> Privacy & Security -> For developers, and toggle **Developer Mode** to **ON**. 
 
 ### 2. Initialize KDE Craft
 Open a standard Windows **PowerShell** window as **Administrator** and run the following configuration scripts to install the framework:
@@ -184,7 +189,6 @@ Launch your newly created **Craft Command Prompt** from the Start Menu and run t
 craft libs/qt6/qtwebchannel
 craft libs/qt6/qtwebengine
 ```
-
 ---
 
 ## 💻 Compilation & Deployment Instructions
